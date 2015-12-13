@@ -1,6 +1,6 @@
 {
   "name": "kinesis_stream_fetcher",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "A client that fetches messages from kinesis streams. Is capable of handling multiple streams with single shards. Creates separate child processes to fetch data. Uses the aws-sdk API to query messages. Built to avoid use of the multilang daemon provided by awslabs.",
   "main": "app.js",
   "scripts": {
@@ -23,5 +23,13 @@
     "streams",
     "poller",
     "aws"
-  ]
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/supersid/kinesis_stream_fetcher.git"
+  },
+  "bugs": {
+    "url": "https://github.com/supersid/kinesis_stream_fetcher/issues"
+  },
+  "homepage": "https://github.com/supersid/kinesis_stream_fetcher#readme"
 }

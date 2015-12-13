@@ -4,6 +4,12 @@ Kinesis Stream Fetcher is a basic library to fetch messages from a Kinesis
 stream without using the multilang daemon. It works as a simple poller by
 launching child processes for each stream that needs to be monitored.
 
+### Install
+
+```
+npm install kinesis_stream_fetcher --save
+```
+
 ### Usage
 
 Before starting development ensure that your AWS configuration parameters
