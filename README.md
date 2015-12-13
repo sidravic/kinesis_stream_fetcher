@@ -24,6 +24,7 @@ export KINESIS_PARTITION_KEY="sweetcoffee"
 
 ```
 let streamConfig = {
+    redisUrl: 'redis://localhost:6379',
     streams: [{
         name: 'development-transaction_events-1',
         partitions: 1
@@ -46,3 +47,9 @@ fetcher.on('message', (data) => {
   console.log(data);
 })
 ```
+
+
+### Description
+
+The consumer expects a redis connection to store the last read state of a stream. 
+The first attempt is always to begin from the start of the stream. 
