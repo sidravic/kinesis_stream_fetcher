@@ -1,6 +1,6 @@
 {
   "name": "kinesis_stream_fetcher",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "A client that fetches messages from kinesis streams. Is capable of handling multiple streams with single shards. Creates separate child processes to fetch data. Uses the aws-sdk API to query messages. Built to avoid use of the multilang daemon provided by awslabs.",
   "main": "app.js",
   "scripts": {
