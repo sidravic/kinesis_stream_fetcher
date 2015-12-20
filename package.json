@@ -4,7 +4,7 @@
   "description": "A client that fetches messages from kinesis streams. Is capable of handling multiple streams with single shards. Creates separate child processes to fetch data. Uses the aws-sdk API to query messages. Built to avoid use of the multilang daemon provided by awslabs.",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "./node_modules/mocha/bin/mocha ./test/"
   },
   "author": "Supersid",
   "license": "ISC",
@@ -17,7 +17,14 @@
   "directories": {
     "test": "test"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "chai": "^3.4.1",
+    "expect.js": "^0.3.1",
+    "mocha": "^2.3.4",
+    "mocha-sinon": "^1.1.4",
+    "sinon": "^1.17.2",
+    "sinon-chai": "^2.8.0"
+  },
   "keywords": [
     "kinesis",
     "consumer",

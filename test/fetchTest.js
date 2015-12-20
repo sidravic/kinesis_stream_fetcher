@@ -24,16 +24,28 @@ const server = net.createServer((connection) => {
 
 server.listen(9020, () => {
     console.log('Server listening on ', 9020);
-    let i = new Invoker(streamConfig);
-    i.fetch();
+    let streamConfig = {
+        redisUrl: 'redis://localhost:6379',
+        streams: [{
+            name: 'test-transaction_events',
+            partitions: 1
 
-    i.on('message', (data) => {
-        console.log("+++++++++++++++++++++++++++++++++")
-        console.log("+++++++++++++++++++++++++++++++++")
-        console.log(data);
-        console.log("+++++++++++++++++++++++++++++++++")
-        console.log("+++++++++++++++++++++++++++++++++")
-    })
+        }]
+    };
+
+    new Invoker(streamConfig);
+    //let i = new Invoker();
+
+    //let i = new Invoker(streamConfig);
+    //i.fetch();
+    //
+    //i.on('message', (data) => {
+    //    console.log("+++++++++++++++++++++++++++++++++")
+    //    console.log("+++++++++++++++++++++++++++++++++")
+    //    console.log(data);
+    //    console.log("+++++++++++++++++++++++++++++++++")
+    //    console.log("+++++++++++++++++++++++++++++++++")
+    //})
 })
 
 
