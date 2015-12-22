@@ -21,6 +21,9 @@ const streamConfig = {
     test: {
         redisUrl: 'redis://localhost:6379',
         streams: [{
+            name: 'development-transaction_events_2',
+            partitions: 1
+        }, {
             name: 'test-transaction_events',
             partitions: 1
         }]

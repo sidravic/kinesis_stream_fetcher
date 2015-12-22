@@ -4,6 +4,10 @@ Kinesis Stream Fetcher is a basic library to fetch messages from a Kinesis
 stream without using the multilang daemon. It works as a simple poller by
 launching child processes for each stream that needs to be monitored.
 
+Version 1.0.0 supports multiple partitions and launches a process for each paritition.
+The `partitions` config is no longer relevant as the information is not directly fetched 
+from Amazon API.
+
 ### Install
 
 ```

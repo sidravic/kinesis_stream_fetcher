@@ -2,7 +2,6 @@
 
 let streamConfig  = require('./stream_config.js');
 
-const util  = require('util');
 const _     = require('lodash');
 const net   = require('net');
 const Invoker = require('./../')
@@ -24,6 +23,15 @@ const server = net.createServer((connection) => {
 
 server.listen(9020, () => {
     console.log('Server listening on ', 9020);
+
+    let streamConfig = {
+        redisUrl: 'redis://localhost:6379',
+        streams: [{
+            name: 'development-transaction_events_2',
+            partitions: 4
+        }]
+    }
+
     let i = new Invoker(streamConfig);
     i.fetch();
 
@@ -35,5 +43,6 @@ server.listen(9020, () => {
         console.log("+++++++++++++++++++++++++++++++++")
     })
 })
+
 
 
