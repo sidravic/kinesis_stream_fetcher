@@ -29,9 +29,6 @@ server.listen(9020, () => {
         streams: [{
             name: 'development-transaction_events_2',
             partitions: 4
-        }, {
-            name: 'test-transaction_events',
-            partitions: 1
         }]
     }
 
