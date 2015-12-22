@@ -62,10 +62,25 @@ describe('new KinesisStreamFetchInvoker', function(){
 
 describe('.fetch', function(){
 
-    let redis = null;
+    let redis = new Redis('redis://localhost:6379');
 
-    after(function(){
-        redis.client.del('test-transaction_events');
+    function flushRedis(cb) {
+        redis.client.flushall(cb)
+    }
+
+    beforeEach(function(done) {
+
+        flushRedis(function onFlush(err, data){
+            done();
+        });
+    })
+
+    afterEach(function(done){
+
+        flushRedis(function onFlush(err, data){
+
+            done();
+        });
     })
 
     context('when the stream has a last read state', function(){
@@ -80,10 +95,9 @@ describe('.fetch', function(){
                 }]
             };
 
-            redis = new Redis(streamConfig.redisUrl);
             let lastReadState = { shardId: 'shardId-000000000000',
-                                  lastReadSequenceNumber: '49557082144852057537246038354925096155420087440296116226'
-                                };
+                lastReadSequenceNumber: '49557082144852057537246038354925096155420087440296116226'
+            };
             redis.set(streamConfig.streams[0].name, JSON.stringify(lastReadState));
             let invoker = new KinesisStreamFetchInvoker(streamConfig)
 
@@ -104,7 +118,6 @@ describe('.fetch', function(){
                 }]
             };
 
-            redis = new Redis(streamConfig.redisUrl);
             let lastReadState = { shardId: 'shardId-000000000000',
                 lastReadSequenceNumber: '49557082144852057537246038354925096155420087440296116226'
             };
@@ -116,9 +129,7 @@ describe('.fetch', function(){
                 .stub(invoker, 'launchStreamFetcher')
                 .returns(true)
 
-
             invoker.findLastReadState(streamConfig.streams[0].name, function lastReadState(err, streamName, shardId, lastReadSequenceNumber){
-
 
                 if(err){
                     console.log(err);
@@ -132,6 +143,63 @@ describe('.fetch', function(){
             })
         })
     });
+
+    context('when the stream has no previous read state', function(){
+
+        it('should call launchStreamFetcher from the first record', function(done){
+
+            let streamConfig = {
+                redisUrl: 'redis://localhost:6379',
+                streams: [{
+                    name: 'test-transaction_events',
+                    partitions: 1
+                }]
+            };
+
+            let invoker = new KinesisStreamFetchInvoker(streamConfig)
+
+            let launchStreamInvokerStub = sinon
+                .stub(invoker, 'launchStreamFetcher')
+                .returns(true)
+
+            invoker.findLastReadState(streamConfig.streams[0].name, function lastReadState(err, streamName, shardId, lastReadSequenceNumber){
+
+                if(err){
+                    console.log(err);
+                    invoker.launchStreamFetcher(stream.name, stream.partitions, null, null);
+                }else{
+                    invoker.launchStreamFetcher(streamName, 1, shardId, lastReadSequenceNumber);
+                }
+
+                expect(invoker.launchStreamFetcher).to.have.been.calledWith(streamName, 1, null, null);
+                done();
+            })
+        })
+    });
+})
+
+describe('.launchStreamFetcher', function(){
+
+    let redis = new Redis('redis://localhost:6379');
+
+    function flushRedis(cb) {
+        redis.client.flushall(cb)
+    }
+
+    beforeEach(function(done) {
+
+        flushRedis(function onFlush(err, data){
+            done();
+        });
+    })
+
+    afterEach(function(done){
+
+        flushRedis(function onFlush(err, data){
+
+            done();
+        });
+    })
 })
 
 

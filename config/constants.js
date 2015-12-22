@@ -2,7 +2,9 @@
 
 let Constants = {
     init: 'init',
-    data: 'data'
+    data: 'data',
+    shardInfo: 'shardInfo',
+    shardInfoResponse: 'shardInfoResponse'
 }
 
 
