@@ -38,7 +38,11 @@ server.listen(9020, () => {
     i.on('message', (data) => {
         console.log("+++++++++++++++++++++++++++++++++")
         console.log("+++++++++++++++++++++++++++++++++")
-        console.log(data);
+        if(data && data.payload && data.payload.records) {
+            _.map(data.payload.records, function(record){
+                console.log(new Buffer(record.Data.data).toString('utf8'));
+            })
+        }
         console.log("+++++++++++++++++++++++++++++++++")
         console.log("+++++++++++++++++++++++++++++++++")
     })

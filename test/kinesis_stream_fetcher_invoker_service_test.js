@@ -98,12 +98,21 @@ describe('.fetch', function(){
             let lastReadState = { shardId: 'shardId-000000000000',
                 lastReadSequenceNumber: '49557082144852057537246038354925096155420087440296116226'
             };
-            redis.set(streamConfig.streams[0].name, JSON.stringify(lastReadState));
+
+            let key = streamConfig.streams[0].name.toString() + lastReadState.shardId.toString();
+
             let invoker = new KinesisStreamFetchInvoker(streamConfig)
 
-            invoker.findLastReadState(streamConfig.streams[0].name, function lastReadState(err, streamName, shardId, lastReadSequenceNumber){
+            sinon.stub(redis, 'get').yields(null, JSON.stringify({
+                    streamName: streamConfig.streams[0].name,
+                    shardId:lastReadState.shardId,
+                    lastReadSequenceNumber: lastReadState.lastReadSequenceNumber }))
+
+            invoker.redisClient = redis;
+            invoker.findLastReadState(streamConfig.streams[0].name, lastReadState.shardId, function lastReadState(err, streamName, shardId, lastReadSequenceNumber){
 
                 expect(lastReadSequenceNumber).to.eql('49557082144852057537246038354925096155420087440296116226');
+                redis.get.restore();
                 done();
             })
         })
@@ -121,59 +130,39 @@ describe('.fetch', function(){
             let lastReadState = { shardId: 'shardId-000000000000',
                 lastReadSequenceNumber: '49557082144852057537246038354925096155420087440296116226'
             };
-            redis.set(streamConfig.streams[0].name, JSON.stringify(lastReadState));
+
+            sinon.stub(redis, 'get').yields(null, JSON.stringify({
+                streamName: streamConfig.streams[0].name,
+                shardId:lastReadState.shardId,
+                lastReadSequenceNumber: lastReadState.lastReadSequenceNumber }))
 
             let invoker = new KinesisStreamFetchInvoker(streamConfig)
+            invoker.redisClient = redis;
 
-            let launchStreamInvokerSpy = sinon
+            sinon
                 .stub(invoker, 'launchStreamFetcher')
                 .returns(true)
 
-            invoker.findLastReadState(streamConfig.streams[0].name, function lastReadState(err, streamName, shardId, lastReadSequenceNumber){
+            sinon.stub(invoker, 'findLastReadState').yields(null,
+                                                            streamConfig.streams[0].name,
+                                                            lastReadState.shardId,
+                                                            lastReadState.lastReadSequenceNumber
+                                                            )
 
-                if(err){
-                    console.log(err);
-                    invoker.launchStreamFetcher(stream.name, stream.partitions, null, null);
+
+            invoker.findLastReadState(streamConfig.streams[0].name, lastReadState.shardId, function onLastReadState(err, _streamName, _shardId, lastReadSequenceNumber){
+
+                if(err || (lastReadSequenceNumber == null)){
+                    invoker.launchStreamFetcher(_streamName, 1, _shardId, lastReadSequenceNumber);
                 }else{
-                    invoker.launchStreamFetcher(streamName, 1, shardId, lastReadSequenceNumber);
+                    invoker.launchStreamFetcher(_streamName, 1, _shardId, lastReadSequenceNumber);
                 }
 
-                expect(invoker.launchStreamFetcher).to.have.been.calledWith(streamName, 1, shardId, lastReadSequenceNumber);
+                expect(invoker.launchStreamFetcher).to.have.been.calledWith(streamConfig.streams[0].name, 1,
+                                                                            lastReadState.shardId, lastReadState.lastReadSequenceNumber);
                 done();
             })
-        })
-    });
 
-    context('when the stream has no previous read state', function(){
-
-        it('should call launchStreamFetcher from the first record', function(done){
-
-            let streamConfig = {
-                redisUrl: 'redis://localhost:6379',
-                streams: [{
-                    name: 'test-transaction_events',
-                    partitions: 1
-                }]
-            };
-
-            let invoker = new KinesisStreamFetchInvoker(streamConfig)
-
-            let launchStreamInvokerStub = sinon
-                .stub(invoker, 'launchStreamFetcher')
-                .returns(true)
-
-            invoker.findLastReadState(streamConfig.streams[0].name, function lastReadState(err, streamName, shardId, lastReadSequenceNumber){
-
-                if(err){
-                    console.log(err);
-                    invoker.launchStreamFetcher(stream.name, stream.partitions, null, null);
-                }else{
-                    invoker.launchStreamFetcher(streamName, 1, shardId, lastReadSequenceNumber);
-                }
-
-                expect(invoker.launchStreamFetcher).to.have.been.calledWith(streamName, 1, null, null);
-                done();
-            })
         })
     });
 })
