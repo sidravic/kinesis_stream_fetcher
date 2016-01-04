@@ -20,11 +20,14 @@ const server = net.createServer((connection) => {
 
 })
 
+let port = process.env.PORT || 9020
+let instanceId = process.env.INSTANCE_ID || 'instance-1';
 
-server.listen(9020, () => {
-    console.log('Server listening on ', 9020);
+server.listen(port, () => {
+    console.log('Server listening on ', port);
 
     let streamConfig = {
+        instanceId: instanceId,
         redisUrl: 'redis://localhost:6379',
         streams: [{
             name: 'development-transaction_events_2',

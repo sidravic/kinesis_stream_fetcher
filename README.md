@@ -26,8 +26,18 @@ export AWS_REGION="ap-southeast-1"
 export KINESIS_PARTITION_KEY="sweetcoffee"
 ```
 
+**Update**
+
+Version 1.2.0 includes a backward compatible support for instanceIds. Each instanceId
+identifies a deployment uniquely, thus allowing you to run multiple instances of Kinesis
+Stream Fetcher. 
+ 
+This was a bug in the earlier versions where it assumed that the library would be used for a
+single instance
+
 ```
 let streamConfig = {
+    instanceId: 'instance-1',
     redisUrl: 'redis://localhost:6379',
     streams: [{
         name: 'development-transaction_events-1',
